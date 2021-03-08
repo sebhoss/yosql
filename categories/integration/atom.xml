@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://gohugo.io/" version="0.81.0">Hugo</generator><title type="html">Integration on YoSQL - write more SQL</title><link href="https://yosql.projects.metio.wtf/categories/integration/" rel="alternate" type="text/html" title="HTML"/><link href="https://yosql.projects.metio.wtf/categories/integration/index.xml" rel="alternate" type="application/rss+xml" title="RSS"/><link href="https://yosql.projects.metio.wtf/categories/integration/atom.xml" rel="self" type="application/atom+xml" title="Atom"/><updated>2021-03-08T06:55:52+00:00</updated><id>https://yosql.projects.metio.wtf/categories/integration/</id><entry><title type="html">Converters</title><link href="https://yosql.projects.metio.wtf/integration/converters/?utm_source=atom_feed" rel="alternate" type="text/html"/><id>https://yosql.projects.metio.wtf/integration/converters/</id><published>2019-07-07T14:29:29+02:00</published><updated>2019-07-07T14:29:29+02:00</updated><content type="html"><![CDATA[<p>Changing the result type is possible with the help of a converter:</p>
+<div class="highlight"><pre class="chroma"><code class="language-sql" data-lang="sql"><span class="c1">-- parameters:
+</span><span class="c1">--   - name: userId
+</span><span class="c1">--     type: int
+</span><span class="c1">-- results:
+</span><span class="c1">--   converter: my.own.UserConverter
+</span><span class="c1">--   resultType: my.own.User
+</span><span class="c1"></span><span class="k">SELECT</span>  <span class="o">*</span>
+<span class="k">FROM</span>    <span class="n">users</span>
+<span class="k">WHERE</span>   <span class="n">id</span> <span class="o">=</span> <span class="p">:</span><span class="n">userId</span>
+</code></pre></div><p>Which in turn changes the generated code into this:</p>
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="c1">// uses &#39;User&#39; instead of &#39;ResultRow&#39; &amp; &#39;int&#39; instead of &#39;Object&#39;
+</span><span class="c1"></span><span class="n">List</span><span class="o">&lt;</span><span class="n">User</span><span class="o">&gt;</span> <span class="nf">findUser</span><span class="o">(</span><span class="kt">int</span> <span class="n">userId</span><span class="o">)</span>
+<span class="n">Stream</span><span class="o">&lt;</span><span class="n">User</span><span class="o">&gt;</span> <span class="nf">findUserStreamEager</span><span class="o">(</span><span class="kt">int</span> <span class="n">userId</span><span class="o">)</span>
+<span class="n">Stream</span><span class="o">&lt;</span><span class="n">User</span><span class="o">&gt;</span> <span class="nf">findUserStreamLazy</span><span class="o">(</span><span class="kt">int</span> <span class="n">userId</span><span class="o">)</span>
+<span class="n">Flowable</span><span class="o">&lt;</span><span class="n">User</span><span class="o">&gt;</span> <span class="nf">findUserFlow</span><span class="o">(</span><span class="kt">int</span> <span class="n">userId</span><span class="o">)</span>
+</code></pre></div><p><code>my.own.UserConverter</code> could look like this:</p>
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="nn">my.own</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.sql.ResultSet</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.sql.SQLException</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">my.own.User</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">my.own.persistence.util.ResultState</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">UserConverter</span> <span class="o">{</span>
+
+    <span class="kd">public</span> <span class="kd">final</span> <span class="n">User</span> <span class="nf">asUserType</span><span class="o">(</span><span class="kd">final</span> <span class="n">ResultState</span> <span class="n">result</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">SQLException</span> <span class="o">{</span>
+        <span class="kd">final</span> <span class="n">ResultSet</span> <span class="n">resultSet</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="na">getResultSet</span><span class="o">();</span>
+        <span class="kd">final</span> <span class="n">User</span> <span class="n">pojo</span> <span class="o">=</span> <span class="k">new</span> <span class="n">User</span><span class="o">();</span>
+        <span class="n">pojo</span><span class="o">.</span><span class="na">setId</span><span class="o">(</span><span class="n">resultSet</span><span class="o">.</span><span class="na">getInt</span><span class="o">(</span><span class="s">&#34;id&#34;</span><span class="o">));</span>
+        <span class="n">pojo</span><span class="o">.</span><span class="na">setName</span><span class="o">(</span><span class="n">resultSet</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span><span class="s">&#34;name&#34;</span><span class="o">));</span>
+        <span class="k">return</span> <span class="n">pojo</span><span class="o">;</span>
+    <span class="o">}</span>
+
+<span class="o">}</span>
+</code></pre></div>]]></content><category scheme="https://yosql.projects.metio.wtf/categories/integration" term="integration" label="Integration"/><category scheme="https://yosql.projects.metio.wtf/tags/results" term="results" label="results"/></entry><entry><title type="html">Reactive</title><link href="https://yosql.projects.metio.wtf/integration/reactive/?utm_source=atom_feed" rel="alternate" type="text/html"/><id>https://yosql.projects.metio.wtf/integration/reactive/</id><published>2019-07-07T14:27:54+02:00</published><updated>2019-07-07T14:27:54+02:00</updated><content type="html"><![CDATA[<p><code>YoSQL</code> supports several reactive APIs like <strong>rxJava</strong> or <strong>reactor</strong>.</p>
+<p>The <code>yosql-maven-plugin</code> automatically enables reactive methods like the following in case a reactive API was detected as a dependency of the current project.</p>
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="c1">// lazily loads all rows in a stateful flow which closes automatically
+</span><span class="c1"></span><span class="n">Flowable</span><span class="o">&lt;</span><span class="n">ResultRow</span><span class="o">&gt;</span> <span class="nf">findUserFlow</span><span class="o">(</span><span class="n">Object</span> <span class="n">userId</span><span class="o">)</span>
+</code></pre></div>]]></content><category scheme="https://yosql.projects.metio.wtf/categories/integration" term="integration" label="Integration"/><category scheme="https://yosql.projects.metio.wtf/tags/rxjava" term="rxjava" label="rxjava"/><category scheme="https://yosql.projects.metio.wtf/tags/reactor" term="reactor" label="reactor"/><category scheme="https://yosql.projects.metio.wtf/tags/r2dbc" term="r2dbc" label="r2dbc"/></entry><entry><title type="html">Type Safety</title><link href="https://yosql.projects.metio.wtf/integration/type-safety/?utm_source=atom_feed" rel="alternate" type="text/html"/><id>https://yosql.projects.metio.wtf/integration/type-safety/</id><published>2019-06-16T18:53:54+02:00</published><updated>2019-06-16T18:53:54+02:00</updated><content type="html"><![CDATA[<pre><code>&lt;project_root&gt;/
+└── src/
+    └── main/
+        └── yosql/
+            └── user/
+                ├── findUser.sql
+                └── getAllUsers.sql
+</code></pre><p>The <code>findUser.sql</code> file:</p>
+<div class="highlight"><pre class="chroma"><code class="language-sql" data-lang="sql"><span class="k">SELECT</span>  <span class="o">*</span>
+<span class="k">FROM</span>    <span class="n">users</span>
+<span class="k">WHERE</span>   <span class="n">id</span> <span class="o">=</span> <span class="p">:</span><span class="n">userId</span>
+</code></pre></div><p>The type of the generated <code>userId</code> parameter will default to <code>java.lang.Object</code> as long as no other information is
+given. YoSQL does not parse your database schema, nor does it somehow infer the type of <code>userId</code> using some smart
+algorithm. Instead, it relies on its users to do the work (sorry!).</p>
+<p>We can change the type of <code>userId</code> by adding a front matter to the statement that looks like this:</p>
+<div class="highlight"><pre class="chroma"><code class="language-sql" data-lang="sql"><span class="c1">--
+</span><span class="c1">-- parameters:
+</span><span class="c1">--   - name: userId
+</span><span class="c1">--     type: int
+</span><span class="c1">--
+</span><span class="c1"></span><span class="k">SELECT</span>  <span class="o">*</span>
+<span class="k">FROM</span>    <span class="n">users</span>
+<span class="k">WHERE</span>   <span class="n">id</span> <span class="o">=</span> <span class="p">:</span><span class="n">userId</span>
+</code></pre></div><p>After re-generating the code, <code>userId</code> will now be of type <code>int</code>. More complex types as possible as well, as long as
+you use their fully qualified name, e.g. <code>java.lang.String</code> or <code>your.custom.domain.Entity</code>.</p>
+]]></content><category scheme="https://yosql.projects.metio.wtf/categories/integration" term="integration" label="Integration"/><category scheme="https://yosql.projects.metio.wtf/tags/parameters" term="parameters" label="parameters"/></entry><entry><title type="html">Custom</title><link href="https://yosql.projects.metio.wtf/integration/custom/?utm_source=atom_feed" rel="alternate" type="text/html"/><id>https://yosql.projects.metio.wtf/integration/custom/</id><published>2019-06-16T18:51:48+02:00</published><updated>2019-06-16T18:51:48+02:00</updated><content type="html">&lt;p>It is possible to use &lt;code>yosql-core&lt;/code> as an external dependency and build your own code generator on top.&lt;/p></content><category scheme="https://yosql.projects.metio.wtf/categories/integration" term="integration" label="Integration"/><category scheme="https://yosql.projects.metio.wtf/tags/custom" term="custom" label="custom"/></entry></feed>

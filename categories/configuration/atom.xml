@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://gohugo.io/" version="0.81.0">Hugo</generator><title type="html">Configuration on YoSQL - write more SQL</title><link href="https://yosql.projects.metio.wtf/categories/configuration/" rel="alternate" type="text/html" title="HTML"/><link href="https://yosql.projects.metio.wtf/categories/configuration/index.xml" rel="alternate" type="application/rss+xml" title="RSS"/><link href="https://yosql.projects.metio.wtf/categories/configuration/atom.xml" rel="self" type="application/atom+xml" title="Atom"/><updated>2021-03-08T06:55:52+00:00</updated><id>https://yosql.projects.metio.wtf/categories/configuration/</id><entry><title type="html">Annotations</title><link href="https://yosql.projects.metio.wtf/configuration/annotations/?utm_source=atom_feed" rel="alternate" type="text/html"/><id>https://yosql.projects.metio.wtf/configuration/annotations/</id><published>2019-09-27T18:51:08+02:00</published><updated>2019-09-27T18:51:08+02:00</updated><content type="html"><![CDATA[<h1 id="annotateclasses"><code>annotateClasses</code></h1>
+<p>Should <code>@Generated</code> annotations be added to generated classes?. Defaults to <code>false</code>.</p>
+<h2 id="configuration-options">Configuration Options</h2>
+<h3 id="option-false">Option: &lsquo;false&rsquo;</h3>
+<p>The default value of the <code>classGeneratedAnnotation</code> is <code>false</code>. Setting the option to <code>false</code> therefore produces the same code generated as the default configuration.</p>
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="nn">com.example.persistence</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">SomeRepository</span> <span class="o">{</span>
+
+    <span class="c1">// ... rest of generated code
+</span><span class="c1"></span>
+<span class="o">}</span>
+</code></pre></div><h3 id="option-true">Option: &lsquo;true&rsquo;</h3>
+<p>Changing the <code>annotateClasses</code> configuration option to <code>true</code> adds the <code>@Generated</code> annotation to every generated class. Its is possible to configure each value individually using other config options (TODO: link here?).</p>
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="nn">com.example.persistence</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">javax.annotation.processing.Generated</span><span class="o">;</span>
+
+<span class="nd">@Generated</span><span class="o">(</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="s">&#34;YoSQL&#34;</span><span class="o">,</span>
+    <span class="n">date</span> <span class="o">=</span> <span class="s">&#34;&lt;current_timestamp&gt;&#34;</span><span class="o">,</span>
+    <span class="n">comments</span> <span class="o">=</span> <span class="s">&#34;DO NOT EDIT&#34;</span>
+<span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">SomeRepository</span> <span class="o">{</span>
+
+    <span class="c1">// ... rest of generated code (same as above)
+</span><span class="c1"></span>
+<span class="o">}</span>
+</code></pre></div><h2 id="related-options">Related Options</h2>
+<ul>
+<li>TODO: list of related config options that somehow influence or are influenced by this options</li>
+</ul>
+<h2 id="tooling">Tooling</h2>
+<h3 id="maven">Maven</h3>
+<p>In order to use <code>YoSQL</code> together with <a href="https://maven.apache.org/">Maven</a>, take a look at the tooling <a href="../tooling/maven">documentation
+for Maven</a>.</p>
+<div class="highlight"><pre class="chroma"><code class="language-xml" data-lang="xml">  <span class="nt">&lt;build&gt;</span>
+    <span class="nt">&lt;plugins&gt;</span>
+      ...
+      <span class="nt">&lt;plugin&gt;</span>
+        <span class="nt">&lt;groupId&gt;</span>wtf.metio.yosql<span class="nt">&lt;/groupId&gt;</span>
+        <span class="nt">&lt;artifactId&gt;</span>yosql-maven-plugin<span class="nt">&lt;/artifactId&gt;</span>
+        <span class="nt">&lt;configuration&gt;</span>
+          <span class="nt">&lt;annotations&gt;</span>
+            <span class="nt">&lt;annotateClasses&gt;</span>true<span class="nt">&lt;/annotateClasses&gt;</span>
+          <span class="nt">&lt;/annotations&gt;</span>
+        <span class="nt">&lt;/configuration&gt;</span>
+      <span class="nt">&lt;/plugin&gt;</span>
+      ...
+    <span class="nt">&lt;/plugins&gt;</span>
+  <span class="nt">&lt;/build&gt;</span>
+</code></pre></div><h3 id="gradle">Gradle</h3>
+<p>In order to use <code>YoSQL</code> together with <a href="https://gradle.org/">Gradle</a>, take a look at the tooling <a href="../tooling/gradle">documentation for Gradle</a>.</p>
+<div class="highlight"><pre class="chroma"><code class="language-groovy" data-lang="groovy"><span class="n">apply</span> <span class="nl">plugin:</span> <span class="s1">&#39;yosql&#39;</span>
+
+<span class="n">yosql</span> <span class="o">{</span>
+    <span class="nl">annotateClasses:</span> <span class="kc">true</span>
+<span class="o">}</span>
+</code></pre></div><p>TODO: info for kotlin</p>
+<h3 id="bazel">Bazel</h3>
+<p>In order to use <code>YoSQL</code> together with <a href="https://bazel.build/">Bazel</a>, take a look at the tooling <a href="../tooling/bazel">documentation for
+Bazel</a>.</p>
+<p>TODO: info for bazel</p>
+<h3 id="cli">CLI</h3>
+<p>In order to use YoSQL on the command line, take a look at the tooling <a href="../tooling/cli">documentation for CLI</a>.</p>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell">$ yosql --annotateClasses<span class="o">=</span><span class="nb">true</span>
+</code></pre></div>]]></content><category scheme="https://yosql.projects.metio.wtf/categories/configuration" term="configuration" label="Configuration"/><category scheme="https://yosql.projects.metio.wtf/tags/annotations" term="annotations" label="annotations"/><category scheme="https://yosql.projects.metio.wtf/tags/annotateclasses" term="annotateclasses" label="annotateClasses"/></entry><entry><title type="html">Repositories</title><link href="https://yosql.projects.metio.wtf/configuration/repositories/?utm_source=atom_feed" rel="alternate" type="text/html"/><id>https://yosql.projects.metio.wtf/configuration/repositories/</id><published>2019-09-27T18:51:08+02:00</published><updated>2019-09-27T18:51:08+02:00</updated><content type="html"><![CDATA[<h1 id="basepackagename"><code>basePackageName</code></h1>
+<p>The base package name for the generated code. Defaults to <code>com.example.persistence</code>.</p>
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="nn">com.example.persistence</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">SomeRepository</span> <span class="o">{</span>
+
+    <span class="c1">// ... rest of generaed code
+</span><span class="c1"></span>
+<span class="o">}</span>
+</code></pre></div><p>Changing the <code>basePackageName</code> configuration option to <code>your.own.domain</code> generates the following code instead:</p>
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="nn">your.own.domain</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">SomeRepository</span> <span class="o">{</span>
+
+    <span class="c1">// ... rest of generated code (same as above)
+</span><span class="c1"></span>
+<span class="o">}</span>
+</code></pre></div>]]></content><category scheme="https://yosql.projects.metio.wtf/categories/configuration" term="configuration" label="Configuration"/><category scheme="https://yosql.projects.metio.wtf/tags/repositories" term="repositories" label="repositories"/><category scheme="https://yosql.projects.metio.wtf/tags/basepackagename" term="basepackagename" label="basePackageName"/></entry></feed>

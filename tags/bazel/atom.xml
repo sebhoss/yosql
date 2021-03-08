@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://gohugo.io/" version="0.81.0">Hugo</generator><title type="html">Bazel on YoSQL - write more SQL</title><link href="https://yosql.projects.metio.wtf/tags/bazel/" rel="alternate" type="text/html" title="HTML"/><link href="https://yosql.projects.metio.wtf/tags/bazel/index.xml" rel="alternate" type="application/rss+xml" title="RSS"/><link href="https://yosql.projects.metio.wtf/tags/bazel/atom.xml" rel="self" type="application/atom+xml" title="Atom"/><updated>2021-03-08T06:55:52+00:00</updated><id>https://yosql.projects.metio.wtf/tags/bazel/</id><entry><title type="html">Bazel</title><link href="https://yosql.projects.metio.wtf/tooling/bazel/?utm_source=atom_feed" rel="alternate" type="text/html"/><id>https://yosql.projects.metio.wtf/tooling/bazel/</id><published>2019-06-16T18:22:51+02:00</published><updated>2019-06-16T18:22:51+02:00</updated><content type="html"><![CDATA[<ol>
+<li>Add git repository to your <code>WORKSPACE</code>:</li>
+</ol>
+<pre><code>git_repository(
+    name = &quot;yosql&quot;,
+    remote = &quot;https://github.com/sebhoss/yosql.git&quot;,
+    tag = &quot;0.0.1-bazel&quot;,
+)
+</code></pre><ol start="2">
+<li>Write .sql files in a directory of your choice (e.g. <code>persistence</code>)</li>
+</ol>
+<pre><code>project/
+├── WORKSPACE
+└── persistence/
+    ├── BUILD
+    └── user/
+        ├── findUser.sql
+        └── addUser.sql
+    └── item/
+        ├── queryAllItems.sql
+        └── createItemTable.sql
+</code></pre><ol start="3">
+<li>Declare a <code>genrule</code> in one of your BUILD files:</li>
+</ol>
+<pre><code>filegroup(
+  name = &quot;your-sql-files&quot;,
+  srcs = glob([&quot;persistence/**/*.sql&quot;]),
+)
+
+genrule(
+  name = &quot;yosql-example&quot;,
+  srcs = [&quot;:your-sql-files&quot;],
+  outs = [
+    &quot;com/example/persistence/UserRepository.java&quot;,
+    &quot;com/example/persistence/ItemRepository.java&quot;,
+    &quot;com/example/persistence/util/ResultRow.java&quot;,
+    &quot;com/example/persistence/util/ResultState.java&quot;,
+    &quot;com/example/persistence/util/FlowState.java&quot;,
+    &quot;com/example/persistence/converter/ToResultRowConverter.java&quot;,
+  ],
+  cmd = &quot;&quot;&quot;
+    $(location @yosql//yosql-cli) \
+      --inputBaseDirectory persistence \
+      --outputBaseDirectory $(@D) \
+      --logLevel off
+  &quot;&quot;&quot;,
+  tools = [&quot;@yosql//yosql-cli&quot;],
+)
+</code></pre><ol start="4">
+<li>Depend on the generated sources by using <code>:yosql-example</code> in the <code>srcs</code> of another rule.</li>
+</ol>
+]]></content><category scheme="https://yosql.projects.metio.wtf/categories/tooling" term="tooling" label="Tooling"/><category scheme="https://yosql.projects.metio.wtf/tags/bazel" term="bazel" label="Bazel"/></entry></feed>

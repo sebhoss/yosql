@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://gohugo.io/" version="0.81.0">Hugo</generator><title type="html">Tooling on YoSQL - write more SQL</title><link href="https://yosql.projects.metio.wtf/categories/tooling/" rel="alternate" type="text/html" title="HTML"/><link href="https://yosql.projects.metio.wtf/categories/tooling/index.xml" rel="alternate" type="application/rss+xml" title="RSS"/><link href="https://yosql.projects.metio.wtf/categories/tooling/atom.xml" rel="self" type="application/atom+xml" title="Atom"/><updated>2021-03-08T06:55:52+00:00</updated><id>https://yosql.projects.metio.wtf/categories/tooling/</id><entry><title type="html">CLI</title><link href="https://yosql.projects.metio.wtf/tooling/cli/?utm_source=atom_feed" rel="alternate" type="text/html"/><id>https://yosql.projects.metio.wtf/tooling/cli/</id><published>2019-06-16T18:23:45+02:00</published><updated>2019-06-16T18:23:45+02:00</updated><content type="html"><![CDATA[<ol>
+<li>Download the latest release</li>
+<li>Write .sql files in a directory of your choice (e.g. <code>/path/to/your/sql/files</code>)</li>
+<li>Call <code>java -jar yosql-cli.jar --inputBaseDirectory /path/to/your/sql/files --outputBaseDirectory /output/path</code></li>
+</ol>
+]]></content><category scheme="https://yosql.projects.metio.wtf/categories/tooling" term="tooling" label="Tooling"/><category scheme="https://yosql.projects.metio.wtf/tags/cli" term="cli" label="CLI"/></entry><entry><title type="html">Maven</title><link href="https://yosql.projects.metio.wtf/tooling/maven/?utm_source=atom_feed" rel="alternate" type="text/html"/><id>https://yosql.projects.metio.wtf/tooling/maven/</id><published>2019-06-16T18:23:40+02:00</published><updated>2019-06-16T18:23:40+02:00</updated><content type="html"><![CDATA[<h2 id="getting-started">Getting Started</h2>
+<ol>
+<li>Add the plugin to your <code>pom.xml</code>:</li>
+</ol>
+<div class="highlight"><pre class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;build&gt;</span>
+    <span class="nt">&lt;plugins&gt;</span>
+        ...
+        <span class="nt">&lt;plugin&gt;</span>
+            <span class="nt">&lt;groupId&gt;</span>wtf.metio.yosql<span class="nt">&lt;/groupId&gt;</span>
+            <span class="nt">&lt;artifactId&gt;</span>yosql-maven-plugin<span class="nt">&lt;/artifactId&gt;</span>
+        <span class="nt">&lt;/plugin&gt;</span>
+        ...
+    <span class="nt">&lt;/plugins&gt;</span>
+<span class="nt">&lt;/build&gt;</span>
+</code></pre></div><ol start="2">
+<li>Add .sql files in <em>src/main/yosql</em> and write SQL statements into them.</li>
+</ol>
+<pre><code>&lt;project_root&gt;/
+├── pom.xml
+└── src/
+    └── main/
+        └── yosql/
+            └── domainObject/
+                ├── yourQuery.sql
+                └── changeYourData.sql
+            └── aggregateRoot/
+                ├── anotherQuery.sql
+                └── addData.sql
+</code></pre><ol start="3">
+<li>Execute the <em>yosql:generate</em> goal (or just run <code>mvn generate-sources</code>) to generate the Java code.</li>
+</ol>
+<h2 id="configuration">Configuration</h2>
+<p>You can configure how YoSQL operates and how the generated code like by using the default Maven configuration
+mechanism (TODO: add link). Take a look at the <a href="../configuration/">available configuration options</a> in order to see what can be
+configured.</p>
+<div class="highlight"><pre class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;build&gt;</span>
+    <span class="nt">&lt;plugins&gt;</span>
+        ...
+        <span class="nt">&lt;plugin&gt;</span>
+            <span class="nt">&lt;groupId&gt;</span>wtf.metio.yosql<span class="nt">&lt;/groupId&gt;</span>
+            <span class="nt">&lt;artifactId&gt;</span>yosql-maven-plugin<span class="nt">&lt;/artifactId&gt;</span>
+            <span class="nt">&lt;configuration&gt;</span>
+              <span class="nt">&lt;repositories&gt;</span>
+                <span class="nt">&lt;basePackageName&gt;</span>your.domain.persistence<span class="nt">&lt;/basePackageName&gt;</span>
+              <span class="nt">&lt;/repositories&gt;</span>
+            <span class="nt">&lt;/configuration&gt;</span>
+        <span class="nt">&lt;/plugin&gt;</span>
+        ...
+    <span class="nt">&lt;/plugins&gt;</span>
+<span class="nt">&lt;/build&gt;</span>
+</code></pre></div><h3 id="multiple-configurations">Multiple Configurations</h3>
+<p>In some cases it might be preferable to generate some repositories (TODO: link to glossary) with a specific set of configuration options while using another set for other repositories. There are several ways how this can be accomplished:</p>
+<ol>
+<li>Place SQL files in different Maven modules.</li>
+<li>Use a single module with multiple <code>execution</code> configurations.</li>
+<li>Override configuration for individual SQL statements.</li>
+</ol>
+<h4 id="multiple-executions">Multiple <code>execution</code>s</h4>
+<p>Make sure that multiple executions do not make use of the same .sql files. Otherwise, the executions will overwrite
+the generated code of each other. The last execution will win. Share configuration across all executions by using a single top level <code>configuration</code> block.</p>
+<div class="highlight"><pre class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;build&gt;</span>
+    <span class="nt">&lt;plugins&gt;</span>
+        ...
+        <span class="nt">&lt;plugin&gt;</span>
+            <span class="nt">&lt;groupId&gt;</span>wtf.metio.yosql<span class="nt">&lt;/groupId&gt;</span>
+            <span class="nt">&lt;artifactId&gt;</span>yosql-maven-plugin<span class="nt">&lt;/artifactId&gt;</span>
+            <span class="nt">&lt;configuration&gt;</span>
+              <span class="nt">&lt;repositories&gt;</span>
+                <span class="nt">&lt;basePackageName&gt;</span>your.domain.persistence<span class="nt">&lt;/basePackageName&gt;</span>
+              <span class="nt">&lt;/repositories&gt;</span>
+            <span class="nt">&lt;/configuration&gt;</span>
+            <span class="nt">&lt;executions&gt;</span>
+                <span class="nt">&lt;execution&gt;</span>
+                    <span class="nt">&lt;id&gt;</span>config-a<span class="nt">&lt;/id&gt;</span>
+                    <span class="nt">&lt;configuration&gt;</span>
+                      <span class="nt">&lt;files&gt;</span>
+                        <span class="nt">&lt;inputBaseDirectory&gt;</span>src/main/database/reactive<span class="nt">&lt;/inputBaseDirectory&gt;</span>
+                      <span class="nt">&lt;/files&gt;</span>
+                      <span class="nt">&lt;repositories&gt;</span>
+                        <span class="nt">&lt;generateRxJavaApi&gt;</span>true<span class="nt">&lt;/generateRxJavaApi&gt;</span>
+                      <span class="nt">&lt;/repositories&gt;</span>
+                    <span class="nt">&lt;/configuration&gt;</span>
+                <span class="nt">&lt;/execution&gt;</span>
+            <span class="nt">&lt;/executions&gt;</span>
+            <span class="nt">&lt;executions&gt;</span>
+                <span class="nt">&lt;execution&gt;</span>
+                    <span class="nt">&lt;id&gt;</span>config-b<span class="nt">&lt;/id&gt;</span>
+                    <span class="nt">&lt;configuration&gt;</span>
+                      <span class="nt">&lt;files&gt;</span>
+                        <span class="nt">&lt;inputBaseDirectory&gt;</span>src/main/database/synchronous<span class="nt">&lt;/inputBaseDirectory&gt;</span>
+                      <span class="nt">&lt;/files&gt;</span>
+                      <span class="nt">&lt;java&gt;</span>
+                        <span class="nt">&lt;apiVersion&gt;</span>15<span class="nt">&lt;/apiVersion&gt;</span>
+                      <span class="nt">&lt;/java&gt;</span>
+                    <span class="nt">&lt;/configuration&gt;</span>
+                <span class="nt">&lt;/execution&gt;</span>
+            <span class="nt">&lt;/executions&gt;</span>
+        <span class="nt">&lt;/plugin&gt;</span>
+        ...
+    <span class="nt">&lt;/plugins&gt;</span>
+<span class="nt">&lt;/build&gt;</span>
+</code></pre></div>]]></content><category scheme="https://yosql.projects.metio.wtf/categories/tooling" term="tooling" label="Tooling"/><category scheme="https://yosql.projects.metio.wtf/tags/maven" term="maven" label="Maven"/></entry><entry><title type="html">Bazel</title><link href="https://yosql.projects.metio.wtf/tooling/bazel/?utm_source=atom_feed" rel="alternate" type="text/html"/><id>https://yosql.projects.metio.wtf/tooling/bazel/</id><published>2019-06-16T18:22:51+02:00</published><updated>2019-06-16T18:22:51+02:00</updated><content type="html"><![CDATA[<ol>
+<li>Add git repository to your <code>WORKSPACE</code>:</li>
+</ol>
+<pre><code>git_repository(
+    name = &quot;yosql&quot;,
+    remote = &quot;https://github.com/sebhoss/yosql.git&quot;,
+    tag = &quot;0.0.1-bazel&quot;,
+)
+</code></pre><ol start="2">
+<li>Write .sql files in a directory of your choice (e.g. <code>persistence</code>)</li>
+</ol>
+<pre><code>project/
+├── WORKSPACE
+└── persistence/
+    ├── BUILD
+    └── user/
+        ├── findUser.sql
+        └── addUser.sql
+    └── item/
+        ├── queryAllItems.sql
+        └── createItemTable.sql
+</code></pre><ol start="3">
+<li>Declare a <code>genrule</code> in one of your BUILD files:</li>
+</ol>
+<pre><code>filegroup(
+  name = &quot;your-sql-files&quot;,
+  srcs = glob([&quot;persistence/**/*.sql&quot;]),
+)
+
+genrule(
+  name = &quot;yosql-example&quot;,
+  srcs = [&quot;:your-sql-files&quot;],
+  outs = [
+    &quot;com/example/persistence/UserRepository.java&quot;,
+    &quot;com/example/persistence/ItemRepository.java&quot;,
+    &quot;com/example/persistence/util/ResultRow.java&quot;,
+    &quot;com/example/persistence/util/ResultState.java&quot;,
+    &quot;com/example/persistence/util/FlowState.java&quot;,
+    &quot;com/example/persistence/converter/ToResultRowConverter.java&quot;,
+  ],
+  cmd = &quot;&quot;&quot;
+    $(location @yosql//yosql-cli) \
+      --inputBaseDirectory persistence \
+      --outputBaseDirectory $(@D) \
+      --logLevel off
+  &quot;&quot;&quot;,
+  tools = [&quot;@yosql//yosql-cli&quot;],
+)
+</code></pre><ol start="4">
+<li>Depend on the generated sources by using <code>:yosql-example</code> in the <code>srcs</code> of another rule.</li>
+</ol>
+]]></content><category scheme="https://yosql.projects.metio.wtf/categories/tooling" term="tooling" label="Tooling"/><category scheme="https://yosql.projects.metio.wtf/tags/bazel" term="bazel" label="Bazel"/></entry></feed>

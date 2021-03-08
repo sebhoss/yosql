@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://gohugo.io/" version="0.81.0">Hugo</generator><title type="html">Project on YoSQL - write more SQL</title><link href="https://yosql.projects.metio.wtf/project/" rel="alternate" type="text/html" title="HTML"/><link href="https://yosql.projects.metio.wtf/project/index.xml" rel="alternate" type="application/rss+xml" title="RSS"/><link href="https://yosql.projects.metio.wtf/project/atom.xml" rel="self" type="application/atom+xml" title="Atom"/><updated>2021-03-08T06:55:52+00:00</updated><id>https://yosql.projects.metio.wtf/project/</id><entry><title type="html">Alternatives</title><link href="https://yosql.projects.metio.wtf/project/alternatives/?utm_source=atom_feed" rel="alternate" type="text/html"/><id>https://yosql.projects.metio.wtf/project/alternatives/</id><published>2019-06-16T18:23:25+02:00</published><updated>2019-06-16T18:23:25+02:00</updated><content type="html"><![CDATA[<p>Here is an incomplete list of tools that we consider to be close siblings to <code>YoSQL</code>:</p>
+<ul>
+<li><a href="https://github.com/krisajenkins/yesql">https://github.com/krisajenkins/yesql</a></li>
+<li><a href="https://www.hugsql.org/">https://www.hugsql.org/</a></li>
+<li><a href="https://github.com/OpenGamma/ElSql">https://github.com/OpenGamma/ElSql</a></li>
+<li><a href="https://sqlc.dev/">https://sqlc.dev/</a> (Go)</li>
+</ul>
+]]></content></entry><entry><title type="html">Scope and Vision</title><link href="https://yosql.projects.metio.wtf/project/scope-and-vision/?utm_source=atom_feed" rel="alternate" type="text/html"/><id>https://yosql.projects.metio.wtf/project/scope-and-vision/</id><published>2019-06-16T18:23:25+02:00</published><updated>2019-06-16T18:23:25+02:00</updated><content type="html"><![CDATA[<p>vision:</p>
+<ol>
+<li>zero runtime dependencies</li>
+<li>as few surprises as possible</li>
+<li>should never fail</li>
+<li>correct code over performance</li>
+</ol>
+<p>scope:</p>
+<ol>
+<li>all existing database access APIs</li>
+<li>java/jvm only</li>
+<li>all existing build tools</li>
+</ol>
+<p>out-of-scope:</p>
+<ol>
+<li>transaction management</li>
+<li>object mapping</li>
+<li>SQL parsing/understanding</li>
+</ol>
+]]></content></entry></feed>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://gohugo.io/" version="0.81.0">Hugo</generator><title type="html">SQL on YoSQL - write more SQL</title><link href="https://yosql.projects.metio.wtf/sql/" rel="alternate" type="text/html" title="HTML"/><link href="https://yosql.projects.metio.wtf/sql/index.xml" rel="alternate" type="application/rss+xml" title="RSS"/><link href="https://yosql.projects.metio.wtf/sql/atom.xml" rel="self" type="application/atom+xml" title="Atom"/><updated>2021-03-08T06:55:52+00:00</updated><id>https://yosql.projects.metio.wtf/sql/</id><entry><title type="html">Vendor Statements</title><link href="https://yosql.projects.metio.wtf/sql/vendor-statements/?utm_source=atom_feed" rel="alternate" type="text/html"/><id>https://yosql.projects.metio.wtf/sql/vendor-statements/</id><published>2019-06-16T18:51:18+02:00</published><updated>2019-06-16T18:51:18+02:00</updated><content type="html"><![CDATA[<p>Vendor specific statements are support as well. Just add a <em>vendor</em> key to your front-matter like this:</p>
+<div class="highlight"><pre class="chroma"><code class="language-sql" data-lang="sql"><span class="c1">-- name: findUsers
+</span><span class="c1">-- vendor: Oracle
+</span><span class="c1"></span><span class="k">SELECT</span>  <span class="o">*</span>
+<span class="k">FROM</span>    <span class="p">(</span>
+    <span class="k">SELECT</span>  <span class="n">ROWNUM</span> <span class="n">rn</span><span class="p">,</span> <span class="k">data</span><span class="p">.</span><span class="o">*</span>
+    <span class="k">FROM</span>    <span class="p">(</span>
+        <span class="k">SELECT</span>  <span class="o">*</span>
+        <span class="k">FROM</span>    <span class="n">users</span>
+        <span class="k">WHERE</span>   <span class="n">id</span> <span class="o">=</span> <span class="p">:</span><span class="n">userId</span>
+    <span class="p">)</span> <span class="k">data</span>
+    <span class="k">WHERE</span>   <span class="n">rn</span> <span class="o">&lt;=</span>  <span class="p">:</span><span class="k">offset</span> <span class="o">+</span> <span class="p">:</span><span class="k">limit</span>
+<span class="p">)</span>
+<span class="k">WHERE</span> <span class="n">rn</span> <span class="o">&gt;=</span> <span class="p">:</span><span class="k">offset</span>
+<span class="p">;</span>
+
+<span class="c1">-- name: findUsers
+</span><span class="c1">-- vendor: PostgreSQL
+</span><span class="c1"></span><span class="k">SELECT</span>  <span class="o">*</span>
+<span class="k">FROM</span>    <span class="n">users</span>
+<span class="k">WHERE</span>   <span class="n">id</span> <span class="o">=</span> <span class="p">:</span><span class="n">userId</span>
+<span class="k">OFFSET</span>  <span class="p">:</span><span class="k">offset</span>
+<span class="k">FETCH</span> <span class="k">NEXT</span> <span class="p">:</span><span class="k">limit</span> <span class="k">ROWS</span> <span class="k">ONLY</span>
+<span class="p">;</span>
+
+<span class="c1">-- name: findUsers
+</span><span class="c1"></span><span class="k">SELECT</span>  <span class="o">*</span>
+<span class="k">FROM</span>    <span class="n">users</span>
+<span class="k">WHERE</span>   <span class="n">id</span> <span class="o">=</span> <span class="p">:</span><span class="n">userId</span>
+<span class="k">OFFSET</span>  <span class="p">:</span><span class="k">offset</span>
+<span class="k">LIMIT</span>   <span class="p">:</span><span class="k">limit</span>
+<span class="p">;</span>
+</code></pre></div><p>The first two statements specify a vendor which means that those queries will only be executed when running against the specified database. In case you want to specify a fallback-query that is used whenever no other vendor matches, specify another statement with the same name but no vendor.</p>
+]]></content><category scheme="https://yosql.projects.metio.wtf/categories/sql" term="sql" label="SQL"/><category scheme="https://yosql.projects.metio.wtf/tags/vendor" term="vendor" label="Vendor"/></entry><entry><title type="html">Write Sql Files</title><link href="https://yosql.projects.metio.wtf/sql/write-sql-files/?utm_source=atom_feed" rel="alternate" type="text/html"/><id>https://yosql.projects.metio.wtf/sql/write-sql-files/</id><published>2019-06-16T18:33:06+02:00</published><updated>2019-06-16T18:33:06+02:00</updated><content type="html"><![CDATA[<pre><code>&lt;project_root&gt;/
+└── src/
+    └── main/
+        └── yosql/
+            └── user/
+                └── getAllUsers.sql
+</code></pre><p>The SQL statements in your .sql files are just plain SQL, e.g. you can save the following statement in a file called
+<code>getAllUsers.sql</code>:</p>
+<div class="highlight"><pre class="chroma"><code class="language-sql" data-lang="sql"><span class="k">SELECT</span>  <span class="o">*</span>
+<span class="k">FROM</span>    <span class="n">users</span>
+</code></pre></div><p>YoSQL will use the name of the file (<code>getAllUsers</code>) as the generated method name and the name of the enclosing folder
+as the prefix for the generated repository. The final result is a new Java class called <code>UserRepository</code> which has a
+method called <code>getAllUsers</code>.</p>
+<h2 id="using-parameters">Using parameters</h2>
+<p>YoSQL supports named parameters only. They must have the form <code>:parameter</code>.</p>
+<pre><code>&lt;project_root&gt;/
+└── src/
+    └── main/
+        └── yosql/
+            └── user/
+                ├── findUser.sql
+                └── getAllUsers.sql
+</code></pre><p>The newly added <code>findUser.sql</code> file could look like the following and causes YoSQL to add another method named
+<code>findUser</code> to the same <code>UserRepository</code> class.</p>
+<div class="highlight"><pre class="chroma"><code class="language-sql" data-lang="sql"><span class="k">SELECT</span>  <span class="o">*</span>
+<span class="k">FROM</span>    <span class="n">users</span>
+<span class="k">WHERE</span>   <span class="n">id</span> <span class="o">=</span> <span class="p">:</span><span class="n">userId</span>
+</code></pre></div><p>The <code>findUser</code> method will expect one parameter (<code>userId</code>).</p>
+]]></content><category scheme="https://yosql.projects.metio.wtf/categories/sql" term="sql" label="SQL"/><category scheme="https://yosql.projects.metio.wtf/tags/files" term="files" label="files"/></entry></feed>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://gohugo.io/" version="0.81.0">Hugo</generator><title type="html">parameters on YoSQL - write more SQL</title><link href="https://yosql.projects.metio.wtf/tags/parameters/" rel="alternate" type="text/html" title="HTML"/><link href="https://yosql.projects.metio.wtf/tags/parameters/index.xml" rel="alternate" type="application/rss+xml" title="RSS"/><link href="https://yosql.projects.metio.wtf/tags/parameters/atom.xml" rel="self" type="application/atom+xml" title="Atom"/><updated>2021-03-08T06:55:52+00:00</updated><id>https://yosql.projects.metio.wtf/tags/parameters/</id><entry><title type="html">Type Safety</title><link href="https://yosql.projects.metio.wtf/integration/type-safety/?utm_source=atom_feed" rel="alternate" type="text/html"/><id>https://yosql.projects.metio.wtf/integration/type-safety/</id><published>2019-06-16T18:53:54+02:00</published><updated>2019-06-16T18:53:54+02:00</updated><content type="html"><![CDATA[<pre><code>&lt;project_root&gt;/
+└── src/
+    └── main/
+        └── yosql/
+            └── user/
+                ├── findUser.sql
+                └── getAllUsers.sql
+</code></pre><p>The <code>findUser.sql</code> file:</p>
+<div class="highlight"><pre class="chroma"><code class="language-sql" data-lang="sql"><span class="k">SELECT</span>  <span class="o">*</span>
+<span class="k">FROM</span>    <span class="n">users</span>
+<span class="k">WHERE</span>   <span class="n">id</span> <span class="o">=</span> <span class="p">:</span><span class="n">userId</span>
+</code></pre></div><p>The type of the generated <code>userId</code> parameter will default to <code>java.lang.Object</code> as long as no other information is
+given. YoSQL does not parse your database schema, nor does it somehow infer the type of <code>userId</code> using some smart
+algorithm. Instead, it relies on its users to do the work (sorry!).</p>
+<p>We can change the type of <code>userId</code> by adding a front matter to the statement that looks like this:</p>
+<div class="highlight"><pre class="chroma"><code class="language-sql" data-lang="sql"><span class="c1">--
+</span><span class="c1">-- parameters:
+</span><span class="c1">--   - name: userId
+</span><span class="c1">--     type: int
+</span><span class="c1">--
+</span><span class="c1"></span><span class="k">SELECT</span>  <span class="o">*</span>
+<span class="k">FROM</span>    <span class="n">users</span>
+<span class="k">WHERE</span>   <span class="n">id</span> <span class="o">=</span> <span class="p">:</span><span class="n">userId</span>
+</code></pre></div><p>After re-generating the code, <code>userId</code> will now be of type <code>int</code>. More complex types as possible as well, as long as
+you use their fully qualified name, e.g. <code>java.lang.String</code> or <code>your.custom.domain.Entity</code>.</p>
+]]></content><category scheme="https://yosql.projects.metio.wtf/categories/integration" term="integration" label="Integration"/><category scheme="https://yosql.projects.metio.wtf/tags/parameters" term="parameters" label="parameters"/></entry></feed>
